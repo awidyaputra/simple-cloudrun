@@ -1,0 +1,19 @@
+env:
+  PROJECT_ID: 'gen-lang-client-0713161089' # TODO: update to your Google Cloud project ID
+  REGION: 'europe-west1' # TODO: update to your region
+  SERVICE: 'simple-run' # TODO: update to your service name
+  IMAGE_NAME: "europe-west1-docker.pkg.dev/gen-lang-client-0713161089/simple-repo/simple-run"
+
+steps:
+# Build the image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', '$IMAGE_NAME', '.']
+# Push the image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '$IMAGE_NAME']
+# Deploy image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'SERVICE_NAME', '--image', '$IMAGE_NAME', '--region', '$REGION']
+images:
+- '$IMAGE_NAME'
